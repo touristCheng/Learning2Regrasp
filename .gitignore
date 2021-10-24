@@ -145,3 +145,4 @@ dataset/train_plys
 dataset/test_batch3
 rebuttal_results
 checkpoints
+dataset

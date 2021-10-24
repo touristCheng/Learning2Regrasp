@@ -186,7 +186,8 @@ def post_refine(support_ply, object_ply, init_transform, critic, num_iter=2):
 	                                           support_ply=support_ply,
 	                                           object_ply=object_ply,
 	                                           critic=critic,
-	                                           n_iter=num_iter)
+	                                           n_iter=num_iter,
+	                                          )
 	return refined_transforms, scores
 
 def search_solution(candidates, actor, critic, centralize, num_iter=2, n_samp=64,):
@@ -214,6 +215,10 @@ def search_solution(candidates, actor, critic, centralize, num_iter=2, n_samp=64
 									   dtype=selected.dtype)
 			obj_cent[0, :2] = torch.mean(selected, 0, keepdim=True)[0, :2]
 			obj_cent[0, 2] = torch.min(selected, 0, keepdim=True)[0][0, 2]
+
+			# if args.real_data:
+			# 	obj_cent[0, 2] -= 0.005
+			# 	sup_cent[0, 2] -= 0.005
 
 			support -= sup_cent
 			selected -= obj_cent

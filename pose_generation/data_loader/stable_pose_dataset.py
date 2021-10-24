@@ -193,8 +193,8 @@ if __name__ == '__main__':
 	from torch.utils.data import DataLoader
 
 	dataset = StablePoseDataset('../../dataset',
-                                list_path='../../dataset/data_list/train_generator.txt')
-	loaderV = DataLoader(dataset, 2, sampler=None, num_workers=1,
+                                list_path='../../dataset/data_list/generator_debug.txt')
+	loaderV = DataLoader(dataset, 1, sampler=None, num_workers=1,
                          drop_last=False, shuffle=False)
 
 	def visualize(sup, obj, ):
@@ -217,8 +217,6 @@ if __name__ == '__main__':
 		obj_ply = apply_transform(transforms, obj_ply)
 		visualize(sup_ply, obj_ply)
 
-		if i > 100:
-			assert 0
 
 
 

@@ -172,7 +172,7 @@ class Searcher():
 
 class Critic(object):
 	def __init__(self, model: nn.Module, device, mini_batch=4):
-		self.model = model
+		self.model = model.to(device)
 		self.model.eval()
 		self.mini_batch = mini_batch
 		self.device = device
@@ -195,17 +195,6 @@ class Critic(object):
 
 		data = torch.cat([support_ply, object_ply], 1).permute(0, 2, 1) # (B, 3, 2*N)
 
-
-		# if self.centralize:
-		# 	b = support_ply.shape[0]
-		# 	sup_cent = torch.zeros((b, 3, 1), device=support_ply.device,
-		# 						   dtype=support_ply.dtype)
-		# 	sup_cent[:, :2, 0] = torch.mean(support_ply, 2, keepdim=True)[:, :2, 0]
-		# 	sup_cent[:, 2, 0] = torch.min(support_ply, 2, keepdim=True)[0][:, 2, 0]
-		#
-		# 	data -= sup_cent
-		#
-		# 	debug_save(data, save_dir='./debug', flag='c_full_cent')
 
 		mask = torch.zeros((B, 1, N1+N2), device=data.device, dtype=data.dtype)
 		mask[:, :, N2:] = 1
@@ -240,18 +229,10 @@ def write_ply(points, colors, save_path):
 	pcd.colors = o3d.utility.Vector3dVector(colors / div_)
 	o3d.io.write_point_cloud(save_path, pcd, write_ascii=False)
 
-def debug_save(data, save_dir, flag):
-	import os
-	b = data.shape[0]
-	os.makedirs(save_dir, exist_ok=True)
-	for i in range(b):
-		data_ply = data[i].detach().numpy().T
-		write_ply(data_ply, np.zeros(data_ply.shape), '{}/{}_{}.ply'.format(save_dir, flag, i))
-
 
 class Actor(object):
 	def __init__(self, model: nn.Module, device, z_dim, batch_size=1):
-		self.model = model
+		self.model = model.to(device)
 		self.z_dim = z_dim
 		self.batch_size = batch_size
 		assert batch_size == 1
@@ -268,23 +249,6 @@ class Actor(object):
 		support_ply = support_ply.unsqueeze(0).permute(0, 2, 1) # (1, 3, N)
 		object_ply = object_ply.unsqueeze(0).permute(0, 2, 1) # (1, 3, N)
 
-		# if self.centralize:
-		# 	b = support_ply.shape[0]
-		# 	sup_cent = torch.zeros((b, 3, 1), device=support_ply.device,
-		# 						   dtype=support_ply.dtype)
-		#
-		# 	sup_cent[:, :2, 0] = torch.mean(support_ply, 2, keepdim=True)[:, :2, 0]
-		# 	sup_cent[:, 2, 0] = torch.min(support_ply, 2, keepdim=True)[0][:, 2, 0]
-		# 	obj_cent = torch.zeros((b, 3, 1), device=object_ply.device,
-		# 						   dtype=object_ply.dtype)
-		# 	obj_cent[:, :2, 0] = torch.mean(object_ply, 2, keepdim=True)[:, :2, 0]
-		# 	obj_cent[:, 2, 0] = torch.min(object_ply, 2, keepdim=True)[0][:, 2, 0]
-		#
-		# 	support_ply -= sup_cent
-		# 	object_ply -= obj_cent
-		#
-		# 	debug_save(support_ply, save_dir='./debug', flag='g_sup_cent')
-		# 	debug_save(object_ply, save_dir='./debug', flag='g_obj_cent')
 
 		sample = {'support': support_ply, 'object': object_ply}
 		z_noise = sample_from_gaussian(self.z_dim,
@@ -297,40 +261,7 @@ class Actor(object):
 
 		pred = self.model(sample)['pred'] # (1, M, 4, 4)
 
-		# apply_debug_transform(obj=object_ply, sup=support_ply,
-		#                       transforms=pred, flag='centered')
-
-		# if self.centralize:
-		# 	# support_ply += sup_cent
-		# 	# object_ply += obj_cent
-		# 	base2cent = torch.eye(4, dtype=pred.dtype, device=pred.device).view((b, 1, 4, 4))
-		# 	base2cent[:, 0, :3, 3] = -obj_cent[:, :3, 0]
-		# 	cent2base = torch.eye(4, dtype=pred.dtype, device=pred.device).view((b, 1, 4, 4))
-		# 	cent2base[:, 0, :3, 3] = sup_cent[:, :3, 0]
-		# 	pred = cent2base @ (pred @ base2cent) # (1, m, 4, 4)
-		#
-		# 	# apply_debug_transform(obj=object_ply, sup=support_ply,
-		# 	#                       transforms=pred, flag='back2real')
-
 		return pred[0]
-
-def apply_debug_transform(obj, sup, transforms, flag):
-	'''
-
-	:param obj: (b, 3, n)
-	:param transforms: (b, m, 4, 4)
-	:param sup: (b, 3, n)
-	:return:
-	'''
-
-	obj_ = obj[0].permute(1, 0) # (n, 3)
-	ts = transforms[0]
-	ret = []
-	for i, t_i in enumerate(ts):
-		new_obj_ = apply_transform(transform=t_i, points=obj_)
-		new_full_ = torch.cat([sup[0].permute(1, 0), new_obj_], 0) # (2*n, 3)
-		new_full_ = new_full_.unsqueeze(0).permute(0, 2, 1)
-		debug_save(data=new_full_, save_dir='./debug', flag='{}_p{}'.format(flag, i))
 
 def matrix2vectors(matrix):
 	'''
