@@ -4,8 +4,6 @@ root_path="./dataset"
 list_path="./dataset/data_list/train_generator.txt"
 save_path="./generator_checkpoints/training_$(date +"%F-%T")"
 
-#restore_path="./checkpoints/generator/model_00468000.ckpt"
-
 batch=4
 num_proc=2
 pose_num=128

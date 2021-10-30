@@ -8,9 +8,6 @@ test_list="./real_data/real_data.txt"
 pose_num=128
 rot_rp="axis_angle"
 
-#g_ckpt="./checkpoints/generator/model_00468000.ckpt"
-#g_ckpt="./checkpoints/generator/model_00612000.ckpt"
-
 g_ckpt="./checkpoints/generator/model_00368000.ckpt"
 c_ckpt="./checkpoints/classifier/model_00160000.ckpt"
 
@@ -25,7 +22,7 @@ python inference.py \
           --generator_ckpt $g_ckpt \
           --stable_critic_ckpt $c_ckpt \
           --z_dim 3 \
-          --num_iter 0 \
+          --num_iter 1 \
           --pose_num $pose_num \
           --rot_rp $rot_rp \
           --device 'cpu' \

@@ -134,6 +134,7 @@ def main(args, model, optimizer, scheduler, train_loader, val_loader, train_samp
 			                "{}/model_{:08d}.ckpt".format(args.save_path, train_step))
 
 			if train_step % args.eval_freq == 0:
+				print('evaluating model_{:08d}.ckpt ...'.format(train_step))
 				with torch.no_grad():
 					test(args, model, val_loader, train_step)
 				model.train()
@@ -144,7 +145,7 @@ def main(args, model, optimizer, scheduler, train_loader, val_loader, train_samp
 		gc.collect()
 
 def test(args, model, test_loader, train_step):
-	model.eval_a_category()
+	model.eval()
 	val_scores = DictAverageMeter()
 	for batch_idx, sample in enumerate(test_loader):
 		sample_cuda = dict2cuda(sample)
@@ -222,7 +223,7 @@ def distribute_model(args):
 	train_loader = DataLoader(train_set, args.batch_size, sampler=train_sampler,
 	                          num_workers=args.num_workers, pin_memory=True,
 	                          drop_last=True, shuffle=not is_distributed, worker_init_fn=worker_init_fn)
-	val_loader = DataLoader(val_set, 128, sampler=val_sampler,
+	val_loader = DataLoader(val_set, 64, sampler=val_sampler,
 	                        num_workers=1, pin_memory=True,
 	                        drop_last=False, shuffle=False, worker_init_fn=worker_init_fn)
 

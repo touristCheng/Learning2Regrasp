@@ -349,10 +349,15 @@ if __name__ == '__main__':
 	# loaderV = DataLoader(datasetV, 2, sampler=None, num_workers=1,
 	#                      drop_last=False, shuffle=False)
 
-	train_set = MultiTaskDatasetV2(root_dir='../../dataset',
-	                               list_path='../../dataset/data_list/train_classifier.txt',
-	                               use_aug=True)
-	loaderV = DataLoader(train_set, 4, sampler=None, num_workers=2,
+
+	# train_set = MultiTaskDatasetV2(root_dir='../../dataset',
+	#                                list_path='../../dataset/data_list/train_classifier.txt',
+	#                                use_aug=True)
+	test_set = MultiTaskDatasetV2(root_dir='../../dataset',
+								  list_path='../../dataset/data_list/test_classifier.txt',
+								  use_aug=False)
+
+	loaderV = DataLoader(test_set, 4, sampler=None, num_workers=2,
 	                     drop_last=False, shuffle=False)
 	print('all samples: ', len(loaderV))
 

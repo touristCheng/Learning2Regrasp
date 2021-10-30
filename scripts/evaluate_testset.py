@@ -69,7 +69,6 @@ def plot(x_names, means, stds, ax, max_y=1, title=''):
 	                ha = 'center', va = 'bottom'
 	                )
 
-
 def load_eval_results(acc_stats, cnt_stats, root_dir, cat_name, thresh):
 	all_paths = glob('{}/*.json'.format(root_dir, ))
 	for path in all_paths:
@@ -150,10 +149,8 @@ def infer_all():
 
 def main():
 	infer_all()
-	# eval_all()
-	# stats(0.6)
-	# stats(0.7)
-	# stats(0.8)
+	eval_all()
+	stats(0.8)
 
 
 if __name__ == '__main__':

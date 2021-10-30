@@ -26,14 +26,15 @@ Real-world regrasping demo:
 * ``pip install -r requirements.txt``
 
 ### Dataset
+Visualization of sample stable poses:
 
+![regrasp](imgs/dataset.png)
 
+please download the dataset and place it inside this folder.
 
 ### Reproducing Results
 
 * Evaluating synthetic data: ``python scripts/evaluate_testset.py``
-* 
-
 * Evaluating real data: ``bash scripts/test_real_data.sh``
 
 
