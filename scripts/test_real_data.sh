@@ -1,22 +1,20 @@
 #!/usr/bin/env bash
 export CUDA_VISIBLE_DEVICES=1
 
-root_path="./real_data/other"
-test_list="./real_data/other/real_data3.txt"
+root_path="./real_data/plys"
+test_list="./real_data/real_data.txt"
 ##########
 
 pose_num=128
 rot_rp="axis_angle"
 
-g_ckpt="./checkpoints/generator/model_00184000.ckpt"
-g_ckpt="./checkpoints/generator/model_00556000.ckpt"
+#g_ckpt="./checkpoints/generator/model_00468000.ckpt"
+#g_ckpt="./checkpoints/generator/model_00612000.ckpt"
 
-g_ckpt="./checkpoints/generator/model_00612000.ckpt"
+g_ckpt="./checkpoints/generator/model_00368000.ckpt"
 c_ckpt="./checkpoints/classifier/model_00160000.ckpt"
 
-g_ckpt="./checkpoints/legacy/model_00280000.ckpt"
-
-save_path="./rebuttal_results/verify_real_data_$(date +"%F-%T")"
+save_path="./test_results/real_data"
 
 mkdir -p $save_path
 
@@ -32,5 +30,6 @@ python inference.py \
           --rot_rp $rot_rp \
           --device 'cpu' \
           --real_data \
+          --filter \
           --render
 

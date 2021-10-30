@@ -193,7 +193,7 @@ if __name__ == '__main__':
 	from torch.utils.data import DataLoader
 
 	dataset = StablePoseDataset('../../dataset',
-                                list_path='../../dataset/data_list/generator_debug.txt')
+                                list_path='../../dataset/data_list/generator_debug.txt',)
 	loaderV = DataLoader(dataset, 1, sampler=None, num_workers=1,
                          drop_last=False, shuffle=False)
 
@@ -208,14 +208,16 @@ if __name__ == '__main__':
 
 		o3d.visualization.draw_geometries([pcd])
 
-	for i, data in enumerate(iter(dataset)):
-		print(data.keys())
-		sup_ply = data['support'].T
-		obj_ply = data['object'].T
-		transforms = data['transforms'][0]
-		print(sup_ply.shape, transforms.shape)
-		obj_ply = apply_transform(transforms, obj_ply)
-		visualize(sup_ply, obj_ply)
+	for t in range(10):
+		for i, data in enumerate(iter(dataset)):
+			print(data.keys())
+			sup_ply = data['support'].T
+			obj_ply = data['object'].T
+			transforms = data['transforms']
+			print(sup_ply.shape, transforms.shape)
+			transforms = transforms[0]
+			obj_ply = apply_transform(transforms, obj_ply)
+			visualize(sup_ply, obj_ply)
 
 
 

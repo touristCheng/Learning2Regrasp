@@ -4,6 +4,7 @@ import torch.nn as nn
 import pytorch3d.transforms as torch_transform
 from pose_check.utils.utils import dict2cuda
 from torch.distributions import MultivariateNormal
+from sklearn.cluster import AgglomerativeClustering
 
 class CEM():
 
@@ -170,11 +171,64 @@ class Searcher():
 					best_actions = vectors2matrix(best_actions) # (B, 4, 4)
 					return best_actions, best_scores
 
+def calc_min_dist(p_a, p_b):
+	'''
+
+    :param p_a: (n, 3)
+    :param p_b: (m, 3)
+    :return:
+    '''
+	aa = np.sum(p_a ** 2, axis=1, keepdims=False)
+	bb = np.sum(p_b ** 2, axis=1, keepdims=False)
+	n = p_a.shape[0]
+	m = p_b.shape[0]
+
+	a_ = np.reshape(p_a, (n, 1, 1, 3))
+	b_ = np.reshape(p_b, (1, m, 3, 1))
+	ab_ = np.matmul(a_, b_)[..., 0, 0] # (n, m)
+	aa_ = np.repeat(np.reshape(aa, (n, 1)), axis=1, repeats=m)
+	bb_ = np.repeat(np.reshape(bb, (1, m)), axis=0, repeats=n)
+	dist = np.sqrt(aa_+bb_-2*ab_)
+	return dist
+
+def heuristic_filter(points_a, points_b, thresh=0.018, d_th=0.65):
+	dist = calc_min_dist(points_a, points_b)
+	dist_a = np.min(dist, axis=1, keepdims=False)
+	nearby_points = points_a[dist_a < thresh]
+	if len(nearby_points) < 10:
+		return False
+
+	clustering = AgglomerativeClustering(n_clusters=None,
+										 distance_threshold=d_th).fit(nearby_points)
+	labels = clustering.labels_
+	label_ids = np.unique(labels)
+
+	if len(label_ids) < 2:
+		return False
+	for id_ in label_ids:
+		if np.sum(labels == id_) < 5:
+			return False
+	return True
+
+def do_filter(support_ply, object_ply, ):
+	scores = []
+	sup_np = support_ply.detach().cpu().numpy()
+	obj_np = object_ply.detach().cpu().numpy()
+	B = sup_np.shape[0]
+
+	for i in range(B):
+		f = heuristic_filter(sup_np[i], obj_np[i])
+		scores.append(float(f))
+	scores = torch.from_numpy(np.array(scores)).to(support_ply.device)
+	return scores
+
+
 class Critic(object):
-	def __init__(self, model: nn.Module, device, mini_batch=4):
+	def __init__(self, model: nn.Module, device, mini_batch=4, use_filter=False):
 		self.model = model.to(device)
 		self.model.eval()
 		self.mini_batch = mini_batch
+		self.use_filter = use_filter
 		self.device = device
 
 	def __call__(self, tr6d, support_ply, object_ply):
@@ -195,7 +249,6 @@ class Critic(object):
 
 		data = torch.cat([support_ply, object_ply], 1).permute(0, 2, 1) # (B, 3, 2*N)
 
-
 		mask = torch.zeros((B, 1, N1+N2), device=data.device, dtype=data.dtype)
 		mask[:, :, N2:] = 1
 
@@ -206,6 +259,11 @@ class Critic(object):
 
 		ret = infer_mini_batch(self.model, sample, self.mini_batch)
 		probs = torch.softmax(ret['preds'][0], 1)[:, 1] # (M, )
+
+		if self.use_filter:
+			scores = do_filter(support_ply, object_ply)
+			probs *= scores
+
 		return probs
 
 def sample_from_gaussian(d, batch_size, num_samples):

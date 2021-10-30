@@ -1,5 +1,4 @@
 import os
-from tqdm import tqdm
 from glob import glob
 import json
 from collections import OrderedDict
@@ -9,32 +8,19 @@ import matplotlib.pyplot as plt
 
 #######
 
-model_id = '00612000'
-g_ckpt="./checkpoints/generator/model_{}.ckpt".format(model_id)
+
+g_ckpt="./checkpoints/generator/model_00368000.ckpt"
 c_ckpt="./checkpoints/classifier/model_00160000.ckpt"
 
-folder_name = 'test_batch12'
-root_path="./dataset/{}/test_plys".format(folder_name)
-all_test_list = glob('./dataset/{}/test_groups/*.txt'.format(folder_name))
+root_path="./dataset/test_plys".format()
+all_test_list = glob('./dataset/data_list/test_groups/*.txt')
 
-all_test_list = [
-				# './dataset/{}/test_groups/mug-spoon.txt'.format(folder_name),
-				#  './dataset/{}/test_groups/mug-folk.txt'.format(folder_name),
-                #  './dataset/{}/test_groups/mug-corkcrew.txt'.format(folder_name),
-                #  './dataset/{}/test_groups/bowl-folk.txt'.format(folder_name),
-                #  './dataset/{}/test_groups/bowl-spoon.txt'.format(folder_name),
-                #  './dataset/{}/test_groups/box-wrench.txt'.format(folder_name),
-                #  './dataset/{}/test_groups/box-hammer.txt'.format(folder_name),
-                #  './dataset/{}/test_groups/box-spatula.txt'.format(folder_name),
-                 ]
-
-
-test_root_dir = './dataset/{}/small_cem_full_{}'.format(folder_name, model_id)
+test_root_dir = './test_results/'
 
 #######
 
-mesh_dir = './dataset/{}/test_urdf'.format(folder_name)
-init_dir = './dataset/{}/test_plys'.format(folder_name)
+mesh_dir = './dataset/test_urdf'
+init_dir = './dataset/test_plys'
 total_rounds = range(1, 6)
 
 def eval_a_category(data_list, pred_dir, save_dir, mesh_dir, init_dir):
@@ -87,8 +73,8 @@ def plot(x_names, means, stds, ax, max_y=1, title=''):
 def load_eval_results(acc_stats, cnt_stats, root_dir, cat_name, thresh):
 	all_paths = glob('{}/*.json'.format(root_dir, ))
 	for path in all_paths:
-		pair_name = osp.basename(path).split('.')[0]
-		cat_name = pair_name # comment this
+		# pair_name = osp.basename(path).split('.')[0]
+		# cat_name = pair_name #
 
 		data = read_file(path)[0]
 		acc_val = float(data['acc'][str(thresh)])
@@ -133,8 +119,8 @@ def stats(thresh=0.8, ):
 			means.append(mean_k)
 			stds.append(std_k)
 		x_names = x_names + ['mean', ]
-		mean_ = np.mean(means)
-		std_ = np.std(means)
+		mean_ = np.nanmean(means)
+		std_ = np.nanstd(means)
 		means.append(mean_)
 		stds.append(std_)
 		return x_names, means, stds
@@ -147,7 +133,7 @@ def stats(thresh=0.8, ):
 	plot(x_names=x_names, means=cnt_mean, stds=cnt_std, ax=ax[1], max_y=128, title='diversity #')
 
 	plt.tight_layout()
-	plt.savefig('{}/hist_{}_{}.pdf'.format(test_root_dir, osp.basename(all_test_list[0]), thresh))
+	plt.savefig('{}/hist_{}.pdf'.format(test_root_dir, thresh))
 	plt.show()
 
 def infer_all():
@@ -163,11 +149,11 @@ def infer_all():
 			os.system(cmd)
 
 def main():
-	# infer_all()
+	infer_all()
 	# eval_all()
 	# stats(0.6)
 	# stats(0.7)
-	stats(0.8)
+	# stats(0.8)
 
 
 if __name__ == '__main__':

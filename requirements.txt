@@ -7,3 +7,5 @@ dominate
 plyfile==0.7.3
 scikit-learn==0.24.1
 scipy==1.6.2
+pybullet
+trimesh

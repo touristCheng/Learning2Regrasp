@@ -24,6 +24,7 @@ parser.add_argument('--test_list', type=str, default='./pose_generation/dataset/
 parser.add_argument('--save_path', type=str, help='path to save depth maps.')
 parser.add_argument('--real_data', action='store_true')
 parser.add_argument('--render_ply', action='store_true')
+parser.add_argument('--filter', action='store_true')
 
 #test parameters
 parser.add_argument('--generator_ckpt', type=str, help='the path for pre-trained model.',
@@ -137,7 +138,7 @@ def main(args):
 	stable_critic.to(args.device)
 	stable_critic.eval()
 
-	critic = Critic(stable_critic, device=args.device, mini_batch=64)
+	critic = Critic(stable_critic, device=args.device, mini_batch=64, use_filter=args.filter)
 	actor = Actor(generator, device=args.device, z_dim=args.z_dim, batch_size=1)
 	data_list = open(args.test_list, 'r').readlines()
 	data_list = list(map(lambda x: str(x).strip().split('-'), data_list))
@@ -216,12 +217,12 @@ def search_solution(candidates, actor, critic, centralize, num_iter=2, n_samp=64
 			obj_cent[0, :2] = torch.mean(selected, 0, keepdim=True)[0, :2]
 			obj_cent[0, 2] = torch.min(selected, 0, keepdim=True)[0][0, 2]
 
-			# if args.real_data:
-			# 	obj_cent[0, 2] -= 0.005
-			# 	sup_cent[0, 2] -= 0.005
-
 			support -= sup_cent
 			selected -= obj_cent
+
+			# write_ply(support, np.zeros_like(support), './debug_support.ply')
+			# write_ply(selected, np.zeros_like(selected), './debug_object.ply')
+
 
 		proposals = actor(support, selected, n_samp=n_samp) # (M, 4, 4)
 		print('# Time [actor]: {:.2f}'.format(time.time() - tic))
