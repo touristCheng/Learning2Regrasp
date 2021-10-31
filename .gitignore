@@ -140,9 +140,6 @@ dmypy.json
 # Pyre type checker
 .pyre/
 noise_*
-dataset/train_data
-dataset/train_plys
-dataset/test_batch3
-rebuttal_results
+
 dataset
-add_new_data
+test_results
