@@ -16,7 +16,7 @@ parser.add_argument('--sup_path', type=str, default='./test_urdf/bowl1r182.urdf'
 parser.add_argument('--init_obj_pose', type=str, default='./test_plys/folk2r651_init_pose.txt')
 parser.add_argument('--init_sup_pose', type=str, default='./test_plys/bowl1r182_init_pose.txt')
 parser.add_argument('--transforms', type=str, default='')
-parser.add_argument('--save_dir', type=str, default='./debug_aug',
+parser.add_argument('--save_dir', type=str, default='./debug',
                     help='path to save records.')
 parser.add_argument('--render', action='store_true')
 

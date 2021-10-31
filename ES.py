@@ -210,7 +210,7 @@ def heuristic_filter(points_a, points_b, thresh=0.018, d_th=0.65):
 			return False
 	return True
 
-def do_filter(support_ply, object_ply, ):
+def do_filtering(support_ply, object_ply, ):
 	scores = []
 	sup_np = support_ply.detach().cpu().numpy()
 	obj_np = object_ply.detach().cpu().numpy()
@@ -261,7 +261,7 @@ class Critic(object):
 		probs = torch.softmax(ret['preds'][0], 1)[:, 1] # (M, )
 
 		if self.use_filter:
-			scores = do_filter(support_ply, object_ply)
+			scores = do_filtering(support_ply, object_ply)
 			probs *= scores
 
 		return probs

@@ -84,17 +84,6 @@ def write_ply(points, colors, save_path):
 	pcd.colors = o3d.utility.Vector3dVector(colors / div_)
 	o3d.io.write_point_cloud(save_path, pcd, write_ascii=False)
 
-def load_real_ply(data_list, pc_len=2048):
-	for subject_names in data_list:
-		subjects = []
-		for name in subject_names:
-
-			sub_path = 'real_data/all/{}.ply'.format(name)
-			subject_ply = read_ply(sub_path, pc_len=pc_len)
-			print('pc shape: ', subject_ply.shape)
-			subject_tensor = torch.from_numpy(subject_ply).float().to(args.device) # (N, 3)
-			subjects.append(subject_tensor)
-		yield subjects
 
 def load_data(data_root, data_list, pc_len=1024, is_real=True):
 	for subject_names in data_list:

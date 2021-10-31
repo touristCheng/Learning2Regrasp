@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 g_ckpt="./checkpoints/generator/model_00368000.ckpt"
 c_ckpt="./checkpoints/classifier/model_00160000.ckpt"
 
-root_path="./dataset/test_plys".format()
+root_path="./dataset/test_plys"
 all_test_list = glob('./dataset/data_list/test_groups/*.txt')
 
 test_root_dir = './test_results/'
