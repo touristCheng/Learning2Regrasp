@@ -1,4 +1,4 @@
-# ReGrasp
+# Learning2Regrasp
 
 ### Learning to Regrasp by Learning to Place, CoRL 2021.
 
