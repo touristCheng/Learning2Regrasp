@@ -7,13 +7,14 @@ We propose a point-cloud-based system for robots to predict a sequence of pick-a
 
 
 ```
-@article{cheng2021learning,
-  title={Learning to Regrasp by Learning to Place},
-  author={Cheng, Shuo and Mo, Kaichun and Shao, Lin},
-  journal={arXiv preprint arXiv:2109.08817},
-  year={2021}
+@inproceedings{
+cheng2021learning,
+title={Learning to Regrasp by Learning to Place},
+author={Shuo Cheng and Kaichun Mo and Lin Shao},
+booktitle={5th Annual Conference on Robot Learning },
+year={2021},
+url={https://openreview.net/forum?id=Qdb1ODTQTnL}
 }
-
 ```
 Real-world regrasping demo:
 
