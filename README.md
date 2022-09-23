@@ -3,7 +3,7 @@
 ### Learning to Regrasp by Learning to Place, CoRL 2021.
 
 ## Introduction
-We propose a point-cloud-based system for robots to predict a sequence of pick-and-place operations for transforming an initial object grasp pose to the desired object grasp poses. We introduce a new and challenging synthetic dataset for learning and evaluating the proposed approach. If you find this project useful for your research, please cite: 
+We propose a point-cloud-based system for robots to predict a sequence of pick-and-place operations for transforming an initial object grasp pose to the desired object grasp poses. We introduce a new and challenging synthetic dataset for learning and evaluating the proposed approach. If you find this project useful for your research, please cite:
 
 
 ```
