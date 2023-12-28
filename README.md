@@ -31,7 +31,7 @@ Visualization of sample stable poses:
 
 ![regrasp](imgs/dataset.png)
 
-Please download the [dataset](https://drive.google.com/file/d/1UEw6RDHFCv-r5TBdV8dy486QT4x_big5/view?usp=sharing) and place it inside this folder.
+Please download the [dataset](https://drive.google.com/file/d/1r-sAMhHJuIJgawzDSEuW5jKdrvIp-7pi/view?usp=sharing) and place it inside this folder.
 
 ### Reproducing Results
 
